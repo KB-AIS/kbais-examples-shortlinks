@@ -16,8 +16,7 @@
     "skipLibCheck": true,
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["server/*"],
-      "@/configuration/*": ["server/05_configuration/*"],
+      "@/web": ["server/*"],
     }
   },
   "include": ["./src"]
