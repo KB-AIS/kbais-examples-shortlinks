@@ -3,14 +3,14 @@ import { IPasswordHasher } from '../password.hasher';
 
 export class BcryptPasswordHasher implements IPasswordHasher {
     async hash(password: string): Promise<string> {
-        const salt = await bcrypt.genSalt(12);
+        const salt = await bcrypt.genSalt();
 
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const passwordHashed = await bcrypt.hash(password, salt);
 
-        return hashedPassword;
+        return passwordHashed;
     }
 
-    verify(password: string, hashedPassword: string): Promise<boolean> {
-        return bcrypt.compare(password, hashedPassword);
+    isGenuine(password: string, passwordHashed: string): Promise<boolean> {
+        return bcrypt.compare(password, passwordHashed);
     }
 }

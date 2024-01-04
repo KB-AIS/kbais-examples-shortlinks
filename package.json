@@ -5,8 +5,8 @@
   "scripts": {
     "build": "vite build",
     "start:api": "NODE_ENV=production tsx src/server/main.ts",
-    "start:api:dev": "nodemon -w src/server -x tsx src/server/main.ts",
-    "start:bot:dev": "nodemon -w src/tg-bot -x tsx src/tg-bot/main.ts",
+    "start:api:dev": "nodemon -w src/server -x tsx src/runners/web/main.ts",
+    "start:bot:dev": "nodemon -w src/tg-bot -x tsx src/runners/bot/main.ts",
     "lint": "eslint ./src/**/*.ts",
     "lint:fix": "eslint ./src/**/*.ts\" --fix"
   },

@@ -3,7 +3,12 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   resolve: {
     alias: {
-      '@/web': '/src/server',
+      '~sl-core': '/src/runners/web',
+
+      '~sl-modules': '/src/runners/web',
+
+      '~sl-web': '/src/runners/web',
+      '~sl-bot': '/src/runners/web',
     },
   },
 });

@@ -1,8 +1,5 @@
-import { authService } from '@/modules/auth/services';
-import { AuthServiceError } from '@/application/auth/services/auth.service';
-import { StatusCodes } from '@/presentation/api/api.consts';
-import { RequestWithBody } from '@/presentation/api/api.types';
-import { validate } from '@/presentation/middlewares/validate.middleware';
+import { authService, AuthServiceError } from '~sl-modules/auth';
+import { StatusCodes, RequestWithBody, validate } from '../../core/api/index';
 import { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
 import { matchI } from 'ts-adt';

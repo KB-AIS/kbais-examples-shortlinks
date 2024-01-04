@@ -1,5 +1,5 @@
-import { getModel } from '@/configuration/persistence/configuration.mongo';
-import { IUserProps, User } from '@/modules/users/domain';
+import { getModel } from '~sl-core/persistence/configuration.mongo';
+import { IUserProps, User } from '~sl-modules/users';
 import mongoose from 'mongoose';
 import { IUserRepository } from '../user.repository';
 

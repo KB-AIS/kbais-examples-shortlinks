@@ -4,5 +4,9 @@ import { IUserRepository } from "./user.repository";
 const userRepository: IUserRepository = new MongooseUserRepository();
 
 export {
-    userRepository,
-}
+    userRepository
+};
+
+export type {
+    IUserRepository
+};

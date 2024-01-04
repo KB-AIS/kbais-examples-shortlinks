@@ -1,13 +1,8 @@
-import { IUserRepository } from '@/application/users';
-import logger from '@/core/core.logger.pino';
-import { Either, EitherV, failureE, failureV, success, successV } from '@/core/core.result';
-import { User } from '@/domain';
-import jwt from 'jsonwebtoken';
+import { f } from '~sl-core/func';
+import { logger } from '~sl-core/utils';
+import { IUserRepository, User } from '~sl-modules/users';
 import { IPasswordHasher } from './password.hasher';
-
-interface SessionPayload {
-    username: string
-}
+import { ISessionAccessTokenIssuer } from './session.accesstoken.issuer';
 
 interface Session {
     accessToken: string,
@@ -23,12 +18,13 @@ export enum AuthServiceError {
 export class AuthService {
     constructor(
         private userRepository: IUserRepository,
-        private passwordHasher: IPasswordHasher
+        private passwordHasher: IPasswordHasher,
+        private accessTokenIssuer: ISessionAccessTokenIssuer,
     ) { }
 
-    async registerUser(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {
+    async registerUser(cmd: { username: string, password: string }): Promise<f.Either<AuthServiceError>> {
         if (await this.userRepository.exists(cmd.username)) {
-            return failureE(AuthServiceError.UsernameIsTaken);
+            return f.failureE(AuthServiceError.UsernameIsTaken);
         }
 
         const user = new User(
@@ -43,36 +39,25 @@ export class AuthService {
 
         logger.info('A new user has been signed in');
 
-        return success();
+        return f.success();
     }
 
-    async createSession(cmd: { username: string, password: string }): Promise<EitherV<Session, AuthServiceError>> {
+    async createSession(cmd: { username: string, password: string }): Promise<f.EitherV<Session, AuthServiceError>> {
         const user = await this.userRepository.getByUsername(cmd.username);
 
         if (user === null) {
-            return failureV(AuthServiceError.UserDoesNotExist);
+            return f.failureV(AuthServiceError.UserDoesNotExist);
         }
 
-        if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
-            return failureV(AuthServiceError.CredentialFailure);
+        if (await this.passwordHasher.isGenuine(cmd.password, user.password) == false) {
+            return f.failureV(AuthServiceError.CredentialFailure);
         }
-
-        const sessionAccessToken = jwt.sign(
-            {
-                username: user.username,
-            },
-            'VERYVERYVERYVERYVERYSECRETSECRETKEY',
-            {
-                expiresIn: '10m'
-            }
-        );
-
-        const userSession = jwt.verify(sessionAccessToken, 'VERYVERYVERYVERYVERYSECRETSECRETKEY') as SessionPayload;
 
         // TODO: Create JWT, Create Refresh Token, Persist Refresh Token
+        const accessToken = this.accessTokenIssuer.issueFor(user);
 
         logger.info({ userId: user.id }, 'A new user session has been created');
 
-        return successV({ accessToken: sessionAccessToken, rotateToken: '' });
+        return f.successV({ accessToken: accessToken, rotateToken: '' });
     }
 }

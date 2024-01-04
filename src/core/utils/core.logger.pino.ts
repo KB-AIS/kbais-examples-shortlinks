@@ -1,6 +1,6 @@
 import pino from 'pino';
 
-const logger = pino({
+export const logger = pino({
     transport: {
         targets: [
             {
@@ -10,5 +10,3 @@ const logger = pino({
         ]
     }
 });
-
-export default logger;

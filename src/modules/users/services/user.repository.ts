@@ -1,4 +1,4 @@
-import { User } from '@/modules/users/domain';
+import { User } from '../domain/user.entity';
 
 export interface IUserRepository {
     createNextId(): string;

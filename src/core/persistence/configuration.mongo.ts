@@ -1,5 +1,5 @@
 import mongoose, { Model, Mongoose, Schema } from 'mongoose';
-import { IUserProps } from '@/domain';
+import { IUserProps } from '~sl-modules/users';
 
 const entitySchemas = new Map<string, Schema>();
 

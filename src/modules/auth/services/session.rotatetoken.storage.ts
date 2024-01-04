@@ -1,1 +1,1 @@
-interface ISessionRotateTokenStorage { }
+export interface ISessionRotateTokenStorage { }

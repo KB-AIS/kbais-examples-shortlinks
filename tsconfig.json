@@ -16,7 +16,16 @@
     "skipLibCheck": true,
     "baseUrl": "./src",
     "paths": {
-      "@/web": ["server/*"],
+      "~sl-core": ["./core"],
+      "~sl-core/*": ["./core/*"],
+
+      "~sl-modules": ["./modules"],
+      "~sl-modules/*": ["./modules/*"],
+
+      "~sl-web": ["./runners/web"],
+      "~sl-web/*": ["./runners/web/*"],
+      "~sl-bot": ["./runners/bot"],
+      "~sl-bot/*": ["./runners/bot/*"],
     }
   },
   "include": ["./src"]

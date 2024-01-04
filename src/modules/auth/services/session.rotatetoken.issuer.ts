@@ -1,1 +1,1 @@
-interface ISessionRotateTokenIssuer { }
+export interface ISessionRotateTokenIssuer { }

@@ -1,19 +1,24 @@
-import v1Router from '@/configuration/api/v1/api.v1.router';
-import { configureMongo } from '@/configuration/persistence/configuration.mongo';
-import logger from '@/core/services/core.logger.pino';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import express, { json } from 'express';
 import helmet from 'helmet';
 import pinoHttp, { Options as LoggerOptions } from 'pino-http';
 import ViteExpress from 'vite-express';
+import { configureMongo as setupMongo } from '~sl-core/persistence/configuration.mongo';
+import { logger } from '~sl-core/utils';
+import v1Router from './api/v1';
 
 const loggerOptions: LoggerOptions = {
     logger: logger,
     useLevel: 'trace',
 };
 
-const corsOptions = { credentials: true, origin: 'http://localhost:4000' };
+const APP_ORIGIN_URL_DEFAULT = 'http://localhost:4000'
+
+const corsOptions: CorsOptions = {
+    credentials: true,
+    origin: process.env.SL_SERVICE__APP_ORIGIN_URL || APP_ORIGIN_URL_DEFAULT
+};
 
 const app = express();
 
@@ -27,10 +32,10 @@ app.use('/api/v1', v1Router);
 
 const SERVICE_PORT_DEFAULT = 5000;
 
-const servicePort = process.env.SL_SERVICE__PORT || SERVICE_PORT_DEFAULT;
+const servicePort = parseInt(process.env.SL_SERVICE__PORT ?? '') || SERVICE_PORT_DEFAULT;
 
-ViteExpress.listen(app, 3000, async () => {
-    await configureMongo();
+ViteExpress.listen(app, servicePort, async () => {
+    await setupMongo();
 
     logger.info('Example app listening on port %d', servicePort);
 });
