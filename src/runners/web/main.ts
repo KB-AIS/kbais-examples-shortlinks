@@ -1,20 +1,22 @@
+import 'express-async-errors';
 import cookieParser from 'cookie-parser';
 import cors, { CorsOptions } from 'cors';
-import express, { json, NextFunction, Request, Response } from 'express';
-import 'express-async-errors';
+import express, { json } from 'express';
+import gracefulShutdown from 'http-graceful-shutdown';
 import helmet from 'helmet';
 import pinoHttp, { Options as LoggerOptions } from 'pino-http';
 import ViteExpress from 'vite-express';
-import { configureMongo as setupMongo } from '~sl-core/persistence/configuration.mongo';
+import { configureMongo } from '~sl-core/persistence/configuration.mongo';
 import { logger } from '~sl-core/utils';
 import v1Router from './api/v1';
+import { error } from './core/api/middlewares/error.middleware';
 
 const loggerOptions: LoggerOptions = {
     logger: logger,
     useLevel: 'trace'
 };
 
-const APP_ORIGIN_URL_DEFAULT = 'http://localhost:4000'
+const APP_ORIGIN_URL_DEFAULT = 'http://localhost:5000'
 
 const corsOptions: CorsOptions = {
     credentials: true,
@@ -31,28 +33,28 @@ app.use(helmet());
 
 app.use('/api/v1', v1Router);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    logger.error(err, 'Unhandled error has been caught');
-
-    next(err);
-})
-
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    res.status(500).send({ error: 'Internal server error' });
-});
+app.use(error);
 
 const SERVICE_PORT_DEFAULT = 5000;
 
 const servicePort = parseInt(process.env.SL_SERVICE__PORT ?? '') || SERVICE_PORT_DEFAULT;
 
-ViteExpress.listen(app, servicePort, async () => {
-    await setupMongo();
+const onStartup = async () => {
+    await configureMongo();
 
-    logger.info('Example app listening on port %d', servicePort);
-});
+    logger.info('App listening on port %d', servicePort);
+};
 
-process.on('SIGINT', () => {
-    logger.info('App is shutting down');
+const onShutdown = async (_signal?: string) => {
+    logger.info('App has been shutdown');
+};
 
-    process.exit(0);
+const server = ViteExpress.listen(app, servicePort, onStartup);
+
+gracefulShutdown(server, {
+    signals: 'SIGINT SIGTERM',
+    timeout: 3000,
+    development: false,
+    forceExit: true,
+    onShutdown: onShutdown
 });

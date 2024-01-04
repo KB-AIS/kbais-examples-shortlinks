@@ -2048,6 +2048,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"http-graceful-shutdown@npm:^3.1.13":
+  version: 3.1.13
+  resolution: "http-graceful-shutdown@npm:3.1.13"
+  dependencies:
+    debug: "npm:^4.3.4"
+  checksum: 56e4c80c2bd468f0b94e8316b9012cea1e273ca4973636f7b5514eea757e8e89dc3fac1f439e0c04492a1f021a7241ed15ba1ccd21f022600c5c34425b3033f6
+  languageName: node
+  linkType: hard
+
 "http-proxy-agent@npm:^7.0.0":
   version: 7.0.0
   resolution: "http-proxy-agent@npm:7.0.0"
@@ -3924,6 +3933,7 @@ __metadata:
     express-async-errors: "npm:^3.1.1"
     express-validator: "npm:^7.0.1"
     helmet: "npm:^7.1.0"
+    http-graceful-shutdown: "npm:^3.1.13"
     jsonwebtoken: "npm:^9.0.2"
     mongoose: "npm:^8.0.3"
     nodemon: "npm:^3.0.1"
