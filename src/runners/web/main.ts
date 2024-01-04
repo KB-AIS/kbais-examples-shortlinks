@@ -1,6 +1,7 @@
 import cookieParser from 'cookie-parser';
 import cors, { CorsOptions } from 'cors';
-import express, { json } from 'express';
+import express, { json, NextFunction, Request, Response } from 'express';
+import 'express-async-errors';
 import helmet from 'helmet';
 import pinoHttp, { Options as LoggerOptions } from 'pino-http';
 import ViteExpress from 'vite-express';
@@ -10,7 +11,7 @@ import v1Router from './api/v1';
 
 const loggerOptions: LoggerOptions = {
     logger: logger,
-    useLevel: 'trace',
+    useLevel: 'trace'
 };
 
 const APP_ORIGIN_URL_DEFAULT = 'http://localhost:4000'
@@ -22,13 +23,23 @@ const corsOptions: CorsOptions = {
 
 const app = express();
 
-app.use(pinoHttp(loggerOptions))
+app.use(pinoHttp(loggerOptions));
 app.use(json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(helmet());
 
 app.use('/api/v1', v1Router);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    logger.error(err, 'Unhandled error has been caught');
+
+    next(err);
+})
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    res.status(500).send({ error: 'Internal server error' });
+});
 
 const SERVICE_PORT_DEFAULT = 5000;
 

@@ -15,7 +15,7 @@ POST {{shortlinks_url}}/api/v1/auth/signin HTTP/1.1
 content-type: application/json
 
 {
-    "username": "anton",
+    "username": "aaaaaa",
     "password": "asdasd"
 }
 

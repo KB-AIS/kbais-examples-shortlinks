@@ -32,6 +32,12 @@ export default class MongooseUserRepository implements IUserRepository {
             return null;
         }
 
-        return new User(userEntity.id, { ...userEntity });
+        return new User(
+            userEntity.id,
+            {
+                username: userEntity.username,
+                password: userEntity.password,
+            }
+        );
     }
 }
