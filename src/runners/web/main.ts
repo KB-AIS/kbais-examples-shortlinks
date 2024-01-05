@@ -1,60 +1,32 @@
-import 'express-async-errors';
-import cookieParser from 'cookie-parser';
-import cors, { CorsOptions } from 'cors';
-import express, { json } from 'express';
-import gracefulShutdown from 'http-graceful-shutdown';
-import helmet from 'helmet';
-import pinoHttp, { Options as LoggerOptions } from 'pino-http';
-import ViteExpress from 'vite-express';
-import { configureMongo } from '~sl-core/persistence/configuration.mongo';
+import { configureMongo, shutdownMongo } from '~sl-core/persistence/configuration.mongo';
 import { logger } from '~sl-core/utils';
-import v1Router from './api/v1';
-import { error } from './core/api/middlewares/error.middleware';
+import { IHostOptions } from './configuration/hosting/host.options';
+import { hostRunner } from './configuration/hosting/host.runner';
 
-const loggerOptions: LoggerOptions = {
-    logger: logger,
-    useLevel: 'trace'
+const SERVICE_MONGO_URL_DEFAULT = 'mongodb://dev:dev@localhost:5010/';
+
+const serviceMongoUrl = process.env.SL_SERVICE__MONGO_URL || SERVICE_MONGO_URL_DEFAULT;
+
+const onStartup = (opts: IHostOptions) => {
+    logger.info('App listening on port %d', opts.port);
 };
 
-const APP_ORIGIN_URL_DEFAULT = 'http://localhost:5000'
+const onBeforeShutdonw = () => {
+    logger.info('Connection pool to MongoDB is shutting down ');
 
-const corsOptions: CorsOptions = {
-    credentials: true,
-    origin: process.env.SL_SERVICE__APP_ORIGIN_URL || APP_ORIGIN_URL_DEFAULT
+    return shutdownMongo();
 };
 
-const app = express();
-
-app.use(pinoHttp(loggerOptions));
-app.use(json());
-app.use(cookieParser());
-app.use(cors(corsOptions));
-app.use(helmet());
-
-app.use('/api/v1', v1Router);
-
-app.use(error);
-
-const SERVICE_PORT_DEFAULT = 5000;
-
-const servicePort = parseInt(process.env.SL_SERVICE__PORT ?? '') || SERVICE_PORT_DEFAULT;
-
-const onStartup = async () => {
-    await configureMongo();
-
-    logger.info('App listening on port %d', servicePort);
-};
-
-const onShutdown = async (_signal?: string) => {
+const onAfterShutdown = (_signal?: string) => {
     logger.info('App has been shutdown');
+
+    return Promise.resolve();
 };
 
-const server = ViteExpress.listen(app, servicePort, onStartup);
+main().catch((error: Error) => logger.fatal(error, 'Catch an error during \'main\' function execution'));
 
-gracefulShutdown(server, {
-    signals: 'SIGINT SIGTERM',
-    timeout: 3000,
-    development: false,
-    forceExit: true,
-    onShutdown: onShutdown
-});
+async function main() {
+    await configureMongo(serviceMongoUrl);
+
+    await hostRunner(onStartup, onBeforeShutdonw, onAfterShutdown);
+}

@@ -16,11 +16,7 @@ const setupModel = <TSchema extends Schema = any>(
     return connection.model(name, schema);
 };
 
-const SERVICE_MONGO_URL_DEFAULT = 'mongodb://dev:dev@localhost:5010/';
-
-const serviceMongoUrl = process.env.SL_SERVICE__MONGO_URL || SERVICE_MONGO_URL_DEFAULT;
-
-export const createMongooseConnectionPool = (): Promise<Mongoose> => {
+const createMongooseConnectionPool = (serviceMongoUrl: string): Promise<Mongoose> => {
     return mongoose.connect(serviceMongoUrl);
 };
 
@@ -34,8 +30,8 @@ export const getModel = <TEntity>(name: string): Model<TEntity> => {
     return model!;
 }
 
-export const configureMongo = async (): Promise<void> => {
-    const connectionPool = await createMongooseConnectionPool();
+export const configureMongo = async (serviceMongoUrl: string): Promise<void> => {
+    const connectionPool = await createMongooseConnectionPool(serviceMongoUrl);
 
     entitySchemas.forEach((schema, name) => {
         const entityModel = setupModel(connectionPool, name, schema);
@@ -44,4 +40,8 @@ export const configureMongo = async (): Promise<void> => {
     });
 
     return;
+}
+
+export const shutdownMongo = () => {
+    return mongoose.disconnect();
 }

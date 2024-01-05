@@ -1,0 +1,5 @@
+[services.host]
+port=5000
+
+[services.persistence.mongo]
+url='mongodb://dev:dev@localhost:5010/'
