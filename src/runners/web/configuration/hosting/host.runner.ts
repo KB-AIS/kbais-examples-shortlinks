@@ -17,12 +17,12 @@ export const hostRunner = (
         }
     });
 
-    return gracefulShutdown(host, {
+    gracefulShutdown(host, {
         signals:     'SIGINT SIGTERM',
-        timeout:     3000,
+        timeout:     10_000,
         development: false,
         forceExit:   true,
         preShutdown: onBeforeShutdown,
         onShutdown:  onAfterShutdown,
-    })();
+    });
 }

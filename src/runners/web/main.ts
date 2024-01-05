@@ -28,5 +28,5 @@ main().catch((error: Error) => logger.fatal(error, 'Catch an error during \'main
 async function main() {
     await configureMongo(serviceMongoUrl);
 
-    await hostRunner(onStartup, onBeforeShutdonw, onAfterShutdown);
+    hostRunner(onStartup, onBeforeShutdonw, onAfterShutdown);
 }
