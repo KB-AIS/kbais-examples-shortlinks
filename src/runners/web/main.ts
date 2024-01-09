@@ -11,7 +11,7 @@ const onStartup = (opts: IHostOptions) => {
     logger.info('App listening on port %d', opts.port);
 };
 
-const onBeforeShutdonw = () => {
+const onBeforeShutdonw = (_signal?: string) => {
     logger.info('Connection pool to MongoDB is shutting down ');
 
     return shutdownMongo();
