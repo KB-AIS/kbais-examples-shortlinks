@@ -1,13 +1,13 @@
 import { IUserProps, User } from '~sl-modules/users';
 import mongoose from 'mongoose';
 import { IUserRepository } from '../user.repository';
-import { IMongoModelProvider } from '~sl-core/persistence/configuration.mongo';
+import { IMongoModelProvider } from '~sl-core/services/mongo.providers';
 
 export default class MongooseUserRepository implements IUserRepository {
     private users: mongoose.Model<IUserProps>;
 
     constructor(models: IMongoModelProvider) {
-        this.users = models.getModel<IUserProps>('user');
+        this.users = models.get<IUserProps>('user');
     }
 
     createNextId(): string {

@@ -1,4 +1,4 @@
-import { appPersistenceContext } from '~sl-core/persistence/configuration.mongo';
+import { appPersistenceContext } from '~sl-core.infra/services/mongo.context';
 import { logger } from '~sl-core/utils';
 import { hostRunner, IHostOptions } from './configuration/hosting/host.runner';
 

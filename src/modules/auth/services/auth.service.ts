@@ -1,4 +1,4 @@
-import { f } from '~sl-core/func';
+import { f } from '~sl-core/results/index';
 import { logger } from '~sl-core/utils';
 import { IUserRepository, User } from '~sl-modules/users';
 import { IPasswordHasher } from './password.hasher';

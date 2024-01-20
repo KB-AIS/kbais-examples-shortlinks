@@ -3,7 +3,6 @@ import 'express-async-errors';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { json } from 'express';
-import helmet from 'helmet';
 import pinoHttp from 'pino-http';
 import { logger } from '~sl-core/utils';
 import v1Router from '../../api/v1/index';
@@ -27,7 +26,7 @@ hostComposer.use(cors({
     origin: process.env.SL_SERVICE__APP_ORIGIN_URL || APP_ORIGIN_URL_DEFAULT
 }));
 
-hostComposer.use(helmet());
+//hostComposer.use(helmet());
 
 hostComposer.use('/api/v1', v1Router);
 
