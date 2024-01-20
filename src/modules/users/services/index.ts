@@ -1,12 +1,8 @@
+import { appPersistenceContext } from "~sl-core/persistence/configuration.mongo";
 import MongooseUserRepository from "./impl/user.mongo.repository";
 import { IUserRepository } from "./user.repository";
 
-const userRepository: IUserRepository = new MongooseUserRepository();
+export const getUserRepository = (): IUserRepository =>
+    new MongooseUserRepository(appPersistenceContext);
 
-export {
-    userRepository
-};
-
-export type {
-    IUserRepository
-};
+export type { IUserRepository };

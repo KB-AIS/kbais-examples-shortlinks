@@ -1,21 +1,22 @@
 import mongoose, { ClientSession, Model, Mongoose, Schema } from 'mongoose';
+import { getOptionsOrDefault } from '~sl-core/options/index';
 import { IUserProps } from '~sl-modules/users';
 
-interface IMongoModelProvider {
+export interface IMongoModelProvider {
     getModel<TEntity>(modelName: string): Model<TEntity>;
 }
 
-interface IMongoSessionProvider {
+export interface IMongoSessionProvider {
     begin(): Promise<ClientSession>;
 }
 
-interface IMongoConfigurator {
-    onConfiguring(): Promise<void>;
+export interface IMongoConfigurator {
+    configure(): Promise<void>;
 
     dispose(): Promise<void>;
 }
 
-interface IMongoServiceOptions {
+export interface IMongoServiceOptions {
     url: string;
 }
 
@@ -41,7 +42,7 @@ export class AppPersistenceContext implements IMongoModelProvider, IMongoSession
         return mongoose.startSession();
     }
 
-    async onConfiguring(): Promise<void> {
+    async configure(): Promise<void> {
         const connection = await this.onConnectionPoolCreating(this.options.url);
 
         this.entitySchemas.forEach((modelSchema, modelName) => {
@@ -65,3 +66,9 @@ export class AppPersistenceContext implements IMongoModelProvider, IMongoSession
         return connection.model(name, schema);
     };
 }
+
+const mongoOptions = getOptionsOrDefault<IMongoServiceOptions>(
+    'services.persistence.mongo', { url: '' }
+);
+
+export const appPersistenceContext = new AppPersistenceContext(mongoOptions)

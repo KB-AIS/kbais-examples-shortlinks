@@ -2,7 +2,15 @@ import gracefulShutdown from 'http-graceful-shutdown';
 import ViteExpress from 'vite-express';
 import { getOptionsOrDefault } from '~sl-core/options';
 import hostComposer from './host.composer';
-import { IHostOptions, params as hostOptionsParams } from './host.options';
+
+export interface IHostOptions {
+    port: number,
+}
+
+export const hostOptionsParams = {
+    section: 'services.host',
+    default: { port: 5000, },
+}
 
 const hostOptions = getOptionsOrDefault<IHostOptions>(hostOptionsParams.section, hostOptionsParams.default);
 

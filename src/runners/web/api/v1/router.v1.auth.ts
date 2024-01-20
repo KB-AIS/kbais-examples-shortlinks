@@ -1,4 +1,4 @@
-import { authService, AuthServiceError } from '~sl-modules/auth';
+import { getAuthService, AuthServiceError } from '~sl-modules/auth';
 import { StatusCodes, RequestWithBody, validate } from '../../core/api/index';
 import { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
@@ -25,7 +25,7 @@ const signUpValidator = () => [
 
 authRouter.post('/signup',
     signUpValidator(), validate,
-    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await authService.registerUser(req.body))({
+    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await getAuthService().registerUser(req.body))({
         success: () => {
             return res.status(StatusCodes.OK).json({ message: 'User has been signed in' })
         },
@@ -42,7 +42,7 @@ authRouter.post('/signup',
 interface SignInDto { username: string, password: string, }
 
 authRouter.post('/signin',
-    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await authService.createSession(req.body))({
+    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await getAuthService().createSession(req.body))({
         success: () => {
             return res.status(StatusCodes.OK).json({ message: 'User successful authorized' })
         },
