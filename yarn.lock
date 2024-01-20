@@ -832,6 +832,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/express-actuator@npm:^1.8.3":
+  version: 1.8.3
+  resolution: "@types/express-actuator@npm:1.8.3"
+  dependencies:
+    "@types/express": "npm:*"
+  checksum: e7a5ffae28aa89c636edc75594adbf63bc3a0f86d27d0bdd4567e8ac91d6de8d0b76b85009ab65a9714625cfc443374eab227b11e58cb4450093500123eef0a2
+  languageName: node
+  linkType: hard
+
 "@types/express-serve-static-core@npm:^4.17.33":
   version: 4.17.41
   resolution: "@types/express-serve-static-core@npm:4.17.41"
@@ -1704,6 +1713,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.11.3":
+  version: 1.11.10
+  resolution: "dayjs@npm:1.11.10"
+  checksum: 4de9af50639d47df87f2e15fa36bb07e0f9ed1e9c52c6caa1482788ee9a384d668f1dbd00c54f82aaab163db07d61d2899384b8254da3a9184fc6deca080e2fe
+  languageName: node
+  linkType: hard
+
 "debug@npm:2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -2099,6 +2115,16 @@ __metadata:
   version: 3.1.1
   resolution: "exponential-backoff@npm:3.1.1"
   checksum: 160456d2d647e6019640bd07111634d8c353038d9fa40176afb7cd49b0548bdae83b56d05e907c2cce2300b81cae35d800ef92fefb9d0208e190fa3b7d6bb579
+  languageName: node
+  linkType: hard
+
+"express-actuator@npm:^1.8.4":
+  version: 1.8.4
+  resolution: "express-actuator@npm:1.8.4"
+  dependencies:
+    dayjs: "npm:^1.11.3"
+    properties-reader: "npm:^2.2.0"
+  checksum: 216264ba977b34d59de95721924354d7b4090b62801f225eac7f861fd8e40251e215826d7b462e57b86d02143eabdff2384b50d17d207e54a61b5aaaa726ad83
   languageName: node
   linkType: hard
 
@@ -3213,7 +3239,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^1.0.3":
+"mkdirp@npm:^1.0.3, mkdirp@npm:^1.0.4":
   version: 1.0.4
   resolution: "mkdirp@npm:1.0.4"
   bin:
@@ -3729,6 +3755,15 @@ __metadata:
     err-code: "npm:^2.0.2"
     retry: "npm:^0.12.0"
   checksum: 9c7045a1a2928094b5b9b15336dcd2a7b1c052f674550df63cc3f36cd44028e5080448175b6f6ca32b642de81150f5e7b1a98b728f15cb069f2dd60ac2616b96
+  languageName: node
+  linkType: hard
+
+"properties-reader@npm:^2.2.0":
+  version: 2.3.0
+  resolution: "properties-reader@npm:2.3.0"
+  dependencies:
+    mkdirp: "npm:^1.0.4"
+  checksum: f665057e3a9076c643ba1198afcc71703eda227a59913252f7ff9467ece8d29c0cf8bf14bf1abcaef71570840c32a4e257e6c39b7550451bbff1a777efcf5667
   languageName: node
   linkType: hard
 
@@ -4583,6 +4618,7 @@ __metadata:
     "@types/cors": "npm:^2.8.17"
     "@types/eslint": "npm:^8.56.0"
     "@types/express": "npm:^4.17.15"
+    "@types/express-actuator": "npm:^1.8.3"
     "@types/helmet": "npm:^4.0.0"
     "@types/jsonwebtoken": "npm:^9.0.5"
     "@types/nanoid": "npm:^3.0.0"
@@ -4598,6 +4634,7 @@ __metadata:
     cors: "npm:^2.8.5"
     eslint: "npm:^8.56.0"
     express: "npm:^4.18.2"
+    express-actuator: "npm:^1.8.4"
     express-async-errors: "npm:^3.1.1"
     express-validator: "npm:^7.0.1"
     helmet: "npm:^7.1.0"
