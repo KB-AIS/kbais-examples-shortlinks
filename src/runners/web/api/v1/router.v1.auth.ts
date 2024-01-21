@@ -44,7 +44,7 @@ interface SignInDto { username: string, password: string, }
 authRouter.post('/signin',
     async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await getAuthService().createSession(req.body))({
         success: () => {
-            return res.status(StatusCodes.OK).json({ message: 'User successful authorized' })
+            return res.status(StatusCodes.OK).json({ message: 'User successful authorized' });
         },
         failure: ({ error }) => {
             if (error === AuthServiceError.UserDoesNotExist) {
