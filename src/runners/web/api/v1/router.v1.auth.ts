@@ -1,8 +1,8 @@
-import { getAuthService, AuthServiceError } from '~sl-modules/auth';
-import { StatusCodes, RequestWithBody, validate } from '../../core/api/index';
 import { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
 import { matchI } from 'ts-adt';
+import { AuthServiceError, getAuthService } from '~sl-modules/auth';
+import { RequestWithBody, StatusCodes, validate } from '../../core/api/index';
 
 const authRouter = Router();
 
@@ -25,45 +25,57 @@ const signUpValidator = () => [
 
 authRouter.post('/signup',
     signUpValidator(), validate,
-    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await getAuthService().registerUser(req.body))({
-        success: () => {
-            return res.status(StatusCodes.OK).json({ message: 'User has been signed in' })
-        },
-        failure: ({ error }) => {
-            if (error === AuthServiceError.UsernameIsTaken) {
-                return res.status(StatusCodes.CONFLICT).json({ message: error });
-            }
+    async (req: RequestWithBody<SignInDto>, res: Response) =>
+        matchI(await getAuthService().registerUser(req.body))({
+            success: () => {
+                return res.status(StatusCodes.OK).json({ message: 'User has been signed in' })
+            },
+            failure: ({ error }) => {
+                if (error === AuthServiceError.UsernameIsTaken) {
+                    return res.status(StatusCodes.CONFLICT).json({ message: error });
+                }
 
-            return res.status(StatusCodes.INTERNAL).json({ message: 'Unexpected error' });
-        }
-    })
+                return res.status(StatusCodes.INTERNAL).json({ message: 'Unexpected error' });
+            }
+        })
 );
 
 interface SignInDto { username: string, password: string, }
 
 authRouter.post('/signin',
-    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await getAuthService().createSession(req.body))({
-        success: () => {
-            return res.status(StatusCodes.OK).json({ message: 'User successful authorized' });
-        },
-        failure: ({ error }) => {
-            if (error === AuthServiceError.UserDoesNotExist) {
-                return res.status(StatusCodes.NOT_FOUND).json({ message: error });
-            }
+    async (req: RequestWithBody<SignInDto>, res: Response) =>
+        matchI(await getAuthService().createSession(req.body))({
+            success: ({ value }) => {
+                return res.status(StatusCodes.OK).json({ 
+                    accessToken: value.accessToken,
+                    rotateToken: value.rotateToken,
+                });
+            },
+            failure: ({ error }) => {
+                if (error === AuthServiceError.UserDoesNotExist) {
+                    return res.status(StatusCodes.NOT_FOUND).json({ message: error });
+                }
 
-            if (error === AuthServiceError.CredentialFailure) {
-                return res.status(StatusCodes.UNAUTHORIZED).json({ message: error });
-            }
+                if (error === AuthServiceError.CredentialFailure) {
+                    return res.status(StatusCodes.UNAUTHORIZED).json({ message: error });
+                }
 
-            return res.status(StatusCodes.INTERNAL).json({ message: 'Unexpected error' });
-        }
-    })
+                // TODO: Throw 'not handled failure case...'
+                return res.status(StatusCodes.INTERNAL).json({ message: 'Unexpected error' });
+            }
+        })
 );
 
 authRouter.delete('/signout',
     async (req: Request, res: Response) => {
 
     }
-)
+);
+
+authRouter.post('/signin-anon',
+    async (req: Request, res: Response) => {
+
+    }
+);
 
 export default authRouter;

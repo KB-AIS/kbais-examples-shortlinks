@@ -1,6 +1,6 @@
 import { f } from '~sl-core/results/index';
 import { logger } from '~sl-core/utils';
-import { IUserRepository, User } from '~sl-modules/users';
+import { IUserRepository, User, UserKind } from '~sl-modules/users';
 import { IPasswordHasher } from './password.hasher';
 import { ISessionAccessTokenIssuer } from './session.accesstoken.issuer';
 
@@ -30,8 +30,9 @@ export class AuthService {
         const user = new User(
             this.userRepository.createNextId(),
             {
+                kind: UserKind.SIGNED,
                 username: cmd.username,
-                password: await this.passwordHasher.hash(cmd.password)
+                password: await this.passwordHasher.hash(cmd.password),
             }
         );
 
@@ -49,7 +50,7 @@ export class AuthService {
             return f.failureV(AuthServiceError.UserDoesNotExist);
         }
 
-        if (await this.passwordHasher.isGenuine(cmd.password, user.password) == false) {
+        if (await this.passwordHasher.isGenuine(cmd.password, user.password!) == false) {
             return f.failureV(AuthServiceError.CredentialFailure);
         }
 
@@ -59,5 +60,9 @@ export class AuthService {
         logger.info({ userId: user.id }, 'A new user session has been created');
 
         return f.successV({ accessToken: accessToken, rotateToken: '' });
+    }
+
+    createTempSession = (cmd: { fingerprint: string }) => {
+
     }
 }

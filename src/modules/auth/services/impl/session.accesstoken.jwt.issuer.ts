@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
-import { User } from '~sl-modules/users/index';
+import jwt, { VerifyErrors } from 'jsonwebtoken';
+import { EitherV, failureV, successV } from '~sl-core/results/core.result';
+import { User, UserKind } from '~sl-modules/users/index';
 import { ISessionAccessTokenIssuer, SessionPayload } from '../session.accesstoken.issuer';
-
 
 export class JwtSessionAccessTokenIssuer implements ISessionAccessTokenIssuer {
     private secretKey = 'VERYVERYVERYVERYVERYSECRETSECRETKEY';
@@ -10,24 +10,24 @@ export class JwtSessionAccessTokenIssuer implements ISessionAccessTokenIssuer {
 
     }
 
-    issueFor(user: User): string {
-        const accessToken = jwt.sign(
-            {
-                username: user.username,
-            },
-            // TODO: Get from configuration
-            this.secretKey,
-            {
-                expiresIn: '10m'
+    // TODO: From Promise
+    issueFor = (user: User): string => {
+        // TODO: Set session lifetime depends on user-kind
+        const jwtOptions = {
+            expiresIn: '10m'
+        };
+
+        // TODO: Remove const user-kind
+        return jwt.sign({ userkind: UserKind.SIGNED, username: user.username, }, this.secretKey, jwtOptions);
+    }
+
+    decode = (accessToken: string): Promise<EitherV<SessionPayload, VerifyErrors>> => new Promise((resolve, _) =>
+        jwt.verify(accessToken, this.secretKey, (error, decoded) => {
+            if (error) {
+                return resolve(failureV(error));
             }
-        );
 
-        return accessToken;
-    }
-
-    decode(accessToken: string): SessionPayload {
-        const session = jwt.verify(accessToken, this.secretKey) as SessionPayload;
-
-        return session;
-    }
+            return resolve(successV(decoded as SessionPayload));
+        })
+    );
 }
