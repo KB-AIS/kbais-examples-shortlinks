@@ -33,7 +33,7 @@ hostComposer.use(actuator());
 
 hostComposer.use('/api/v1', v1Router);
 
-hostComposer.use("/:link", (req, res) => {
+hostComposer.use("/sl/:link", (req, res) => {
     // TODO: Add skip-middleware page option
     res.redirect('https://google.com');
 });

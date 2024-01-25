@@ -18,12 +18,11 @@ const onAfterShutdown = (_signal?: string) => {
     return Promise.resolve();
 };
 
-main().catch((error: Error) => {
-    logger.fatal(error, 'Catch an error during \'main\' function execution')
-});
-
-async function main() {
+try {
+    // Setup system external dependecies
     await appPersistenceContext.configure();
 
     hostRunner(onStartup, onBeforeShutdonw, onAfterShutdown);
+} catch (error) {
+    logger.fatal(error, 'Catch an error during \'main\' function execution')
 }
