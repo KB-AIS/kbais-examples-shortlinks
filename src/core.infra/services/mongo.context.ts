@@ -1,9 +1,11 @@
 import { getConfigsOrDefault } from '~sl-core.infra/configs';
 import mongoose, { ClientSession, Model, Mongoose, Schema } from 'mongoose';
-import { IMongoModelProvider, IMongoSessionProvider } from "~sl-core/services/mongo.providers";
+import { IMongoModelProvider, IMongoSessionProvider } from '~sl-core/services/mongo.providers';
 import { IUserProps } from '~sl-modules/users';
+import {logger} from '~sl-core/utils';
 
-export interface IMongooseInitializator {
+
+export interface IMongooseInitializer {
     configure(): Promise<void>;
 
     dispose(): Promise<void>;
@@ -13,13 +15,13 @@ export interface IMongoServiceOptions {
     url: string;
 }
 
-export class MongoContext implements IMongoModelProvider, IMongoSessionProvider, IMongooseInitializator {
+export class MongoContext implements IMongoModelProvider, IMongoSessionProvider, IMongooseInitializer {
     private entityModels = new Map<string, Model<any>>;
 
     private entitySchemas = new Map<string, Schema>();
 
     constructor(private options: IMongoServiceOptions) {
-        // TODO: Retrive from ContextSchemaBuilder?
+        // TODO: Retrieve from ContextSchemaBuilder?
         this.entitySchemas.set('user', new Schema<IUserProps>({
             username: String,
             password: String
@@ -36,7 +38,9 @@ export class MongoContext implements IMongoModelProvider, IMongoSessionProvider,
         });
     }
 
-    dispose(): Promise<void> {
+    dispose = (): Promise<void> => {
+        logger.info('Connection pool to MongoDB is shutting down');
+
         return mongoose.disconnect();
     }
 
@@ -50,15 +54,19 @@ export class MongoContext implements IMongoModelProvider, IMongoSessionProvider,
         return mongoose.startSession();
     }
 
-    private onConnectionPoolCreating(serviceMongoUrl: string): Promise<Mongoose> {
-        return mongoose.connect(serviceMongoUrl);
+    private onConnectionPoolCreating = async (serviceMongoUrl: string): Promise<Mongoose> => {
+        logger.info('Establishing initial connection to MongoDB')
+
+        return mongoose.connect(serviceMongoUrl, {
+            connectTimeoutMS: 5_000,
+        });
     };
 
     private onModelSchemaCreating<TSchema extends Schema = any>(
         connection: Mongoose, name: string, schema: TSchema
     ) {
         return connection.model(name, schema);
-    };
+    }
 }
 
 const mongoOptions = getConfigsOrDefault<IMongoServiceOptions>(
